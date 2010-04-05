@@ -36,6 +36,12 @@ class Post(models.Model):
         (1, _('Draft')),
         (2, _('Public')),
     )
+    FORMAT_CHOICES = (
+        ('html', _('HTML')),
+        ('rest', _('RestructuredText')),
+        ('mdown', _('MarkDown')),
+        ('txtile', _('Textile')),
+    )
     title = models.CharField(_('title'), max_length=200)
     slug = models.SlugField(_('slug'), unique_for_date='publish')
     author = models.ForeignKey(User, blank=True, null=True)
@@ -47,6 +53,7 @@ class Post(models.Model):
     created = models.DateTimeField(_('created'), auto_now_add=True)
     modified = models.DateTimeField(_('modified'), auto_now=True)
     categories = models.ManyToManyField(Category, blank=True)
+    format = models.CharField(_('format'), choices=FORMAT_CHOICES, default='rest', max_length=100)
     tags = TagField()
     objects = PublicManager()
 

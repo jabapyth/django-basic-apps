@@ -4,11 +4,31 @@ from django import template
 from django.conf import settings
 from django.db import models
 
+from django.utils.safestring import mark_safe
+
+from django.contrib.markup.templatetags import markup as markup_filters
+
 Post = models.get_model('blog', 'post')
 Category = models.get_model('blog', 'category')
 BlogRoll = models.get_model('blog', 'blogroll')
 
 register = template.Library()
+
+def markup(text, format):
+    if format == 'html':
+        return mark_safe(text)
+    elif format == 'rest':
+        return markup_filters.restructuredtext(text)
+    elif format == 'mdown':
+        return markup_filters.markdown(text)
+    elif format == 'txtile':
+        return markup_filters.textile(text)
+    elif settings.DEBUG:
+        raise Exception, "Invalid 'markup' format: %s" % format
+    return ''
+markup.is_safe = True
+
+register.filter(markup)
 
 
 class LatestPosts(template.Node):
